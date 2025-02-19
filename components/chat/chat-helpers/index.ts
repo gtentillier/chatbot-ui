@@ -208,9 +208,12 @@ export const handleHostedChat = async (
 
   let draftMessages = await buildFinalMessages(payload, profile, chatImages)
 
-  let formattedMessages : any[] = []
+  let formattedMessages: any[] = []
   if (provider === "google") {
-    formattedMessages = await adaptMessagesForGoogleGemini(payload, draftMessages)
+    formattedMessages = await adaptMessagesForGoogleGemini(
+      payload,
+      draftMessages
+    )
   } else {
     formattedMessages = draftMessages
   }
@@ -336,7 +339,27 @@ export const processResponse = async (
       },
       controller.signal
     )
-
+    try {
+      const response_decryption = await fetch(
+        // "http://10.2.3.4:5000/presidioDecrypt",
+        "http://localhost:5000/presidioDecrypt",
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: fullText })
+        }
+      )
+      fullText = await response_decryption.text()
+      console.log("Decryption successful")
+      // if (!response_decryption.ok) {
+      //   throw new Error(`HTTP error! Status: ${response.status}`)
+      // }
+    } catch (error) {
+      console.log(`Error decrypting response : ${(error as Error).message}`)
+    }
     return fullText
   } else {
     throw new Error("Response body is null")

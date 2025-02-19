@@ -312,7 +312,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
       </SheetTrigger>
 
       <SheetContent
-        className="flex flex-col justify-between"
+        className="flex flex-col justify-between overflow-auto"
         side="left"
         onKeyDown={handleKeyDown}
       >
